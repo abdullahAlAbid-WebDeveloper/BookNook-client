@@ -1,43 +1,50 @@
 import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import type { Book } from "@/data/books";
 
-const focusRing =
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest/60";
-
+/**
+ * Reusable book card used on the homepage and the All Books page.
+ */
 type BookCardProps = {
-  book: Book;
+  _id: string;
+  title: string;
+  author: string;
+  category: string;
+  image: string;
 };
 
-export function BookCard({ book }: BookCardProps) {
+export function BookCard({ _id, title, author, category, image }: BookCardProps) {
   return (
-    <article className="flex flex-col overflow-hidden rounded-xl border border-line bg-cream-raised shadow-sm transition-shadow hover:shadow-md">
+    <Card className="bg-cream-raised border-line gap-0 overflow-hidden py-0 shadow-sm transition-shadow hover:shadow-md">
       <div className="relative aspect-[2/3] w-full bg-muted">
         <Image
-          src={book.image}
-          alt={`Cover of ${book.title}`}
+          src={image}
+          alt={`Cover of ${title}`}
           fill
           sizes="(min-width: 1024px) 280px, (min-width: 640px) 33vw, 50vw"
           className="object-cover"
         />
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 p-4">
-        <h3 className="font-display text-lg leading-snug text-ink">
-          {book.title}
-        </h3>
-        <p className="text-sm text-muted-foreground">by {book.author}</p>
-        <span className="w-fit rounded-full border border-line bg-cream px-2.5 py-0.5 text-xs font-medium text-forest">
-          {book.category}
-        </span>
+      <CardContent className="flex-1 space-y-2 p-4">
+        <Badge variant="secondary" className="bg-cream text-forest border-line">
+          {category}
+        </Badge>
+        <CardTitle className="font-display text-lg leading-snug text-ink">
+          {title}
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">by {author}</p>
+      </CardContent>
 
-        <Link
-          href=""
-          className={`mt-auto inline-flex h-9 items-center justify-center rounded-lg border border-line bg-cream px-4 text-sm font-medium text-ink transition-colors hover:bg-ink/5 ${focusRing}`}
-        >
-          View Details
+      <CardFooter className="p-4 pt-0">
+        <Link href={`/books/${_id}`}>
+          <Button variant="outline" className="w-full">
+            View Details
+          </Button>
         </Link>
-      </div>
-    </article>
+      </CardFooter>
+    </Card>
   );
 }

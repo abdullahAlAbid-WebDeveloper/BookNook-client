@@ -5,6 +5,8 @@ export const metadata = {
 
 export default function MyBooksPage() {
   return (
-   <></>
+   <>
+   My Books Page
+   </>
   );
 }

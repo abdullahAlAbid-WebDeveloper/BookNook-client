@@ -11,6 +11,9 @@ const focusRing =
 const links = [
   { href: "/", label: "Home" },
   { href: "/books", label: "All Books" },
+  { href: "/add-book", label: "Add Book" },
+  { href: "/my-books", label: "My Books" },
+  { href: "/my-borrows", label: "My Borrows" },
 ];
 
 export function Navbar() {

@@ -32,7 +32,14 @@ export function NewArrivals() {
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6 lg:gap-5">
           {newArrivals.map((book) => (
-            <BookCard key={book.id} book={book} />
+            <BookCard
+              key={book.id}
+              _id={book.id}
+              title={book.title}
+              author={book.author}
+              category={book.category}
+              image={book.image}
+            />
           ))}
         </div>
 

@@ -2,14 +2,19 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  cacheComponents: false,
+  partialPrefetching: false,
   reactCompiler: true,
   images: {
     remotePatterns: [
       {
+        /** Allow images from ANY https site (book covers are user-uploaded). */
         protocol: "https",
-        hostname: "picsum.photos",
+        hostname: "**",
+      },
+      {
+        protocol: "http",
+        hostname: "**",
       },
     ],
   },

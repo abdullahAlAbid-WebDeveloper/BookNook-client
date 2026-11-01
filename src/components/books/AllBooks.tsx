@@ -1,37 +1,18 @@
-"use client";
-
-import { useMemo, useState } from "react";
 import { BookCard } from "@/components/BookCard";
-import { books, sortBooksNewestFirst } from "@/data/books";
 
-const focusRing =
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest/60";
+export async function AllBooks() {
+  const BooksData = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/bookData`,
+    { cache: "no-store" }
+  );
 
-const categories = ["All", ...new Set(books.map((book) => book.category))];
-
-/**
- * With a real database this would be:
- * db.books.find().sort({ createdAt: -1 })
- */
-const allBooks = sortBooksNewestFirst(books);
-
-export function AllBooks() {
-  const [activeCategory, setActiveCategory] = useState("All");
-  const [query, setQuery] = useState("");
-
-  const filteredBooks = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-    return allBooks.filter((book) => {
-      const matchesCategory =
-        activeCategory === "All" || book.category === activeCategory;
-      const matchesQuery =
-        normalizedQuery === "" ||
-        book.title.toLowerCase().includes(normalizedQuery) ||
-        book.author.toLowerCase().includes(normalizedQuery);
-      return matchesCategory && matchesQuery;
-    });
-  }, [activeCategory, query]);
-
+  const books: {
+    _id: string;
+    title: string;
+    author: string;
+    category: string;
+    image: string;
+  }[] = await BooksData.json();
   return (
     <section
       aria-labelledby="all-books-heading"
@@ -53,23 +34,23 @@ export function AllBooks() {
           </p>
         </div>
 
-   
-
-        {filteredBooks.length > 0 ? (
-          <>
-            <p className="mb-4 text-center text-sm text-muted-foreground">
-              Showing {filteredBooks.length} of {allBooks.length} books
-            </p>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 lg:gap-5">
-              {filteredBooks.map((book) => (
-                <BookCard key={book.id} book={book} />
-              ))}
-            </div>
-          </>
+        {/* Render each book with the reusable BookCard */}
+        {books.length > 0 ? (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 lg:gap-5">
+            {books.map((book) => (
+              <BookCard
+                key={book._id}
+                _id={book._id}
+                title={book.title}
+                author={book.author}
+                category={book.category}
+                image={book.image}
+              />
+            ))}
+          </div>
         ) : (
           <p className="py-16 text-center text-muted-foreground">
-            No books match your search. Try a different title, author, or
-            category.
+            No books found yet.
           </p>
         )}
       </div>

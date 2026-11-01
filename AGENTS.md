@@ -33,3 +33,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - `src/app/` — App Router: `/` (homepage: HeroSlider, HowBorrowingWorks, NewArrivals, TopCategories) and `/books` (All Books catalog). Dummy data in `src/data/books.ts` — no real DB yet; New Arrivals mimics `.sort({ createdAt: -1 }).limit(6)` with array sort + slice.
 - `src/components/` — `Navbar.tsx` (logo + theme toggle only), `ThemeToggle.tsx`, `icons.tsx`, shared `BookCard.tsx`, plus `home/` sections.
 - Images live in `public/Images/`; book covers come from `picsum.photos` (remote pattern configured in `next.config.ts`).
+
+
+
+
+
+#Instruction : AI can make only designs not functional change, use only shadcn for all purpus..use just simple code like Beginer level..not use higher code

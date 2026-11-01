@@ -4,8 +4,10 @@ import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/toast";
+import { Suspense } from "react";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,8 +26,7 @@ export const metadata: Metadata = {
     default: "BookNook",
     template: "%s · BookNook",
   },
-  description:
-    "BookNook is a cozy home for your books.",
+  description: "BookNook is a cozy home for your books.",
 };
 
 /** Applies the saved theme before paint so dark mode never flashes. */
@@ -36,16 +37,25 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("h-full", inter.variable, fraunces.variable, "font-sans", geist.variable)}
+      className={cn(
+        "h-full",
+        inter.variable,
+        fraunces.variable,
+        "font-sans",
+        geist.variable,
+      )}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="min-h-full flex flex-col">
         <main className="flex flex-1 flex-col">
-          <Navbar/>
-          {children}
-          <Footer/>
+          <Suspense fallback={<div>The page is loading...</div>}>
+            <Navbar />
+            {children}
+            <Footer />
+            <Toaster />
+          </Suspense>
         </main>
       </body>
     </html>
