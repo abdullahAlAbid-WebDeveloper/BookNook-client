@@ -16,10 +16,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
-
-
+import { useSession } from "@/lib/auth-client";
 
 const categories = ["Fiction", "Science", "History", "Kids", "Others"];
 
@@ -31,14 +31,16 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   const bookData = Object.fromEntries(formData.entries());
 
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/bookData`, {
-
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/bookData`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({...bookData,creatorEmail: bookData.userEmail}),
       },
-      body: JSON.stringify(bookData),
-    });
+    );
 
     const data = await response.json();
 
@@ -53,13 +55,23 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         type: "success",
       });
     }
-
   } catch (error) {
     console.error("Failed to add book:", error);
   }
 };
 
 export default function AddBookPage() {
+  const { data: session, isPending } = useSession();
+  if (isPending) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    );
+  }
+  const { user } = session || { user: { name: "", email: "" } };
+  console.log(user);
+
   return (
     <main className="container mx-auto max-w-2xl px-4 py-10">
       <Card className="bg-cream border-line">
@@ -83,7 +95,11 @@ export default function AddBookPage() {
             {/* Author Name */}
             <div className="space-y-2">
               <Label htmlFor="author">Author Name</Label>
-              <Input id="author" name="author" placeholder="Enter author name" />
+              <Input
+                id="author"
+                name="author"
+                placeholder="Enter author name"
+              />
             </div>
 
             {/* Category */}
@@ -132,14 +148,27 @@ export default function AddBookPage() {
             {/* User Name - read only */}
             <div className="space-y-2">
               <Label htmlFor="userName">Added By (Name)</Label>
-              <Input id="userName" name="userName" placeholder="Enter your name" />
+              <Input
+                id="userName"
+                name="userName"
+                readOnly
+                value={user?.name || ""}
+                placeholder="Enter your name"
+              />
             </div>
 
             {/* User Email - read only */}
             <div className="space-y-2">
               <Label htmlFor="userEmail">Email</Label>
-              <Input id="userEmail" name="userEmail" placeholder="Enter your email" />
+              <Input
+                id="userEmail"
+                name="userEmail"
+                readOnly
+                value={user?.email || ""}
+                placeholder="Enter your email"
+              />
             </div>
+
 
             <Button type="submit" className="w-full">
               Add Book

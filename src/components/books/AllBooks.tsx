@@ -1,4 +1,4 @@
-import { BookCard } from "@/components/BookCard";
+import { BooksGrid } from "@/components/books/BooksGrid";
 
 export async function AllBooks() {
   const BooksData = await fetch(
@@ -13,12 +13,14 @@ export async function AllBooks() {
     category: string;
     image: string;
   }[] = await BooksData.json();
+
   return (
     <section
       aria-labelledby="all-books-heading"
       className="px-5 py-14 sm:px-8 lg:px-10"
     >
       <div className="mx-auto w-full max-w-[1400px]">
+        {/* Header, same style as the homepage sections */}
         <div className="mb-8 text-center">
           <p className="text-xs font-semibold uppercase tracking-wider text-forest">
             Catalog
@@ -34,25 +36,8 @@ export async function AllBooks() {
           </p>
         </div>
 
-        {/* Render each book with the reusable BookCard */}
-        {books.length > 0 ? (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 lg:gap-5">
-            {books.map((book) => (
-              <BookCard
-                key={book._id}
-                _id={book._id}
-                title={book.title}
-                author={book.author}
-                category={book.category}
-                image={book.image}
-              />
-            ))}
-          </div>
-        ) : (
-          <p className="py-16 text-center text-muted-foreground">
-            No books found yet.
-          </p>
-        )}
+        {/* Search + category filter + book cards */}
+        <BooksGrid books={books} />
       </div>
     </section>
   );

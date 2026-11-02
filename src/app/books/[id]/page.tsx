@@ -1,12 +1,12 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import BorrowModal from "@/components/books/BorrowModal";
 
 const BookDetailsPage = async ({ params }: { params: { id: string } }) => {
   const { id } = await params;
@@ -66,7 +66,7 @@ const BookDetailsPage = async ({ params }: { params: { id: string } }) => {
               </p>
             </div>
 
-            <Button className="mt-auto w-full">Borrow This Book</Button>
+            <BorrowModal book={book} />
           </CardContent>
         </div>
       </Card>

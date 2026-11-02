@@ -1,17 +1,26 @@
 import Link from "next/link";
 import { BookCard } from "@/components/BookCard";
-import { books, sortBooksNewestFirst } from "@/data/books";
 
 const focusRing =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest/60";
 
-/**
- * With a real database this would be a single Mongo query:
- * db.books.find().sort({ createdAt: -1 }).limit(6)
- */
-const newArrivals = sortBooksNewestFirst(books).slice(0, 6);
+export async function NewArrivals() {
+  const BooksData = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/bookData`,
+    { cache: "no-store" }
+  );
 
-export function NewArrivals() {
+  const allBooks: {
+    _id: string;
+    title: string;
+    author: string;
+    category: string;
+    image: string;
+  }[] = await BooksData.json();
+
+  // Mimics db.books.find().sort({ createdAt: -1 }).limit(6)
+  const newArrivals = allBooks.slice(-6).reverse();
+
   return (
     <section aria-labelledby="new-arrivals-heading" className="px-5 py-14 sm:px-8 lg:px-10">
       <div className="mx-auto w-full max-w-[1400px]">
@@ -33,8 +42,8 @@ export function NewArrivals() {
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6 lg:gap-5">
           {newArrivals.map((book) => (
             <BookCard
-              key={book.id}
-              _id={book.id}
+              key={book._id}
+              _id={book._id}
               title={book.title}
               author={book.author}
               category={book.category}
