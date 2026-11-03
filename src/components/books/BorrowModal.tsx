@@ -13,48 +13,52 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/components/ui/toast";
+import { useSession } from "@/lib/auth-client";
+import { Spinner } from "../ui/spinner";
+import { toast } from "../ui/toast";
 
 const BorrowModal = ({ book }: { book: { _id?: string; title?: string } }) => {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const { data: session, isPending } = useSession();
+  console.log("session",session,"pend",isPending);
+  
 
   const handleConfirmBorrow = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!name || !email) {
+    const userName = session?.user?.name;
+    const userEmail = session?.user?.email;
+    if (!userName || !userEmail) {
       toast.add({
-        title: "Missing details",
-        description: "Please fill in your name and email first.",
+        title: "User not logged in",
+        description: "Please log in to borrow a book.",
         type: "error",
       });
       return;
-    
     }
 
-
-    const form=e.currentTarget;
-    const formData = new FormData(form);
-
+    setLoading(true);
 
     const borrowData = {
       bookId: book?._id,
       bookTitle: book?.title,
-      userName: name,
-      userEmail: email,
+      userName: userName,
+      userEmail: userEmail,
       borrowDate: new Date().toISOString(),
       status: "pending",
     };
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/bookData/borrow`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/bookData/borrow`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(borrowData),
         },
-        body: JSON.stringify(borrowData),
-      });
+      );
 
       const data = await response.json();
       console.log(data);
@@ -66,8 +70,6 @@ const BorrowModal = ({ book }: { book: { _id?: string; title?: string } }) => {
           type: "success",
         });
         setOpen(false);
-        setName("");
-        setEmail("");
       } else {
         toast.add({
           title: "Something went wrong",
@@ -86,6 +88,14 @@ const BorrowModal = ({ book }: { book: { _id?: string; title?: string } }) => {
       setLoading(false);
     }
   };
+
+  if (isPending) {
+    return (
+      <div className="flex items-center justify-center">
+        <Spinner className="h-4 w-4" />
+      </div>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -109,8 +119,8 @@ const BorrowModal = ({ book }: { book: { _id?: string; title?: string } }) => {
             <Input
               id="name"
               placeholder="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={session?.user?.name}
+              readOnly
               className="border-line bg-cream "
             />
           </div>
@@ -121,14 +131,18 @@ const BorrowModal = ({ book }: { book: { _id?: string; title?: string } }) => {
               id="email"
               type="email"
               placeholder="email@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={session?.user?.email}
+              readOnly
               className="border-line bg-cream"
             />
           </div>
 
           <DialogFooter>
-            <Button variant="outline" type="button" onClick={() => setOpen(false)}>
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => setOpen(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>
@@ -136,7 +150,6 @@ const BorrowModal = ({ book }: { book: { _id?: string; title?: string } }) => {
             </Button>
           </DialogFooter>
         </form>
-
       </DialogContent>
     </Dialog>
   );

@@ -1,10 +1,6 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import BorrowModal from "@/components/books/BorrowModal";
 
@@ -39,7 +35,10 @@ const BookDetailsPage = async ({ params }: { params: { id: string } }) => {
           {/* Info side */}
           <CardContent className="flex flex-col gap-4 p-6">
             <div>
-              <Badge variant="secondary" className="bg-cream text-forest border-line mb-3">
+              <Badge
+                variant="secondary"
+                className="bg-cream text-forest border-line mb-3"
+              >
                 {book?.category || "Uncategorized"}
               </Badge>
               <CardTitle className="font-display text-2xl leading-snug text-ink">
@@ -53,9 +52,12 @@ const BookDetailsPage = async ({ params }: { params: { id: string } }) => {
             <Separator className="bg-line" />
 
             <div>
-              <h2 className="font-display text-lg text-ink mb-1">Description</h2>
+              <h2 className="font-display text-lg text-ink mb-1">
+                Description
+              </h2>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                {book?.description || "No description available for this book yet."}
+                {book?.description ||
+                  "No description available for this book yet."}
               </p>
             </div>
 

@@ -15,17 +15,29 @@ type BookCardProps = {
   image: string;
 };
 
-export function BookCard({ _id, title, author, category, image }: BookCardProps) {
+export function BookCard({
+  _id,
+  title,
+  author,
+  category,
+  image,
+}: BookCardProps) {
   return (
     <Card className="bg-cream-raised border-line gap-0 overflow-hidden py-0 shadow-sm transition-shadow hover:shadow-md">
       <div className="relative aspect-[2/3] w-full bg-muted">
-        <Image
-          src={image}
-          alt={`Cover of ${title}`}
-          fill
-          sizes="(min-width: 1024px) 280px, (min-width: 640px) 33vw, 50vw"
-          className="object-cover"
-        />
+        {image ? (
+          <Image
+            src={image}
+            alt={`Cover of ${title}`}
+            fill
+            sizes="(min-width: 1024px) 280px, (min-width: 640px) 33vw, 50vw"
+            className="object-cover"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-forest to-forest-hover p-4 text-center font-display text-xl text-cream">
+            {title}
+          </div>
+        )}
       </div>
 
       <CardContent className="flex-1 space-y-2 p-4">
