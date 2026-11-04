@@ -30,6 +30,29 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
   const bookData = Object.fromEntries(formData.entries());
 
+  // Check if any book field is empty
+  if (
+    !bookData.title ||
+    !bookData.author ||
+    !bookData.category ||
+    !bookData.totalCopies ||
+    !bookData.image ||
+    !bookData.description
+  ) {
+    toast.add({
+      title: "Missing Information",
+      description: "Please fill in all the book fields before submitting.",
+      type: "error",
+    });
+    return;
+  }
+
+  // Get the JWT token from better-auth (uses your logged-in session cookie)
+  const tokenResponse = await fetch("/api/auth/token");
+  const tokenData = await tokenResponse.json();
+  const token = tokenData.token;
+  console.log(token);
+
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/bookData`,
@@ -37,16 +60,16 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({...bookData,creatorEmail: bookData.userEmail}),
+        body: JSON.stringify({
+          ...bookData,
+          creatorEmail: bookData.userEmail,
+        }),
       },
     );
 
     const data = await response.json();
-
-    console.log(bookData);
-    console.log(response);
-    console.log(data);
 
     if (data.acknowledged) {
       toast.add({
@@ -54,9 +77,21 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         description: "The book has been successfully added to the library.",
         type: "success",
       });
+      form.reset();
+    } else {
+      toast.add({
+        title: "Failed to Add",
+        description: data.error || "Something went wrong. Please try again.",
+        type: "error",
+      });
     }
   } catch (error) {
     console.error("Failed to add book:", error);
+    toast.add({
+      title: "Failed to Add",
+      description: "Could not connect to the server. Please try again.",
+      type: "error",
+    });
   }
 };
 

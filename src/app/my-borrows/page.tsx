@@ -9,12 +9,53 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useSession } from "@/lib/auth-client";
-import Image from "next/image";
+import { toast } from "@/components/ui/toast";
+import { authClient, useSession } from "@/lib/auth-client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
 export default function MyBorrowsPage() {
+  const handleDelete = async (borrow: { _id: string; bookTitle: string }) => {
+    try {
+      // Get the JWT token from better-auth (uses your logged-in session cookie)
+      const tokenResponse = await fetch("/api/auth/token");
+      const tokenData = await tokenResponse.json();
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/bookData/borrow/${borrow._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${tokenData.token}`,
+          },
+        },
+      );
+      const data = await response.json();
+
+      if (data.acknowledged) {
+        setBorrowedBooks(
+          (books) => books?.filter((book) => book._id !== borrow._id) ?? null,
+        );
+        toast.add({
+          title: "Book Returned",
+          description: `"${borrow.bookTitle}" has been returned.`,
+          type: "success",
+        });
+      } else {
+        toast.add({
+          title: "Delete Failed",
+          description: "The book could not be deleted. Please try again.",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to delete book:", error);
+      toast.add({
+        title: "Delete Failed",
+        description: "The book could not be deleted. Please try again.",
+        type: "error",
+      });
+    }
+  };
   const { data: session, isPending } = useSession();
   const [borrowedBooks, setBorrowedBooks] = useState<
     | {
@@ -34,21 +75,32 @@ export default function MyBorrowsPage() {
   useEffect(() => {
     if (!email) return;
 
-    fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/bookData/borrow/${encodeURIComponent(email)}`,
-    )
-      .then((response) => {
+    // Get the JWT token from better-auth (uses your logged-in session cookie)
+    const fetchBorrowedBooks = async () => {
+      try {
+        const tokenResponse = await fetch("/api/auth/token");
+        const tokenData = await tokenResponse.json();
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/bookData/borrow/${encodeURIComponent(email)}`,
+          {
+            headers: {
+              Authorization: `Bearer ${tokenData.token}`,
+            },
+          },
+        );
+
         if (!response.ok) {
           throw new Error("Failed to fetch borrowed books");
         }
-        return response.json();
-      })
-      .then((data) => {
+        const data = await response.json();
         setBorrowedBooks(data);
-      })
-      .catch(() => {
+      } catch {
         setError(true);
-      });
+      }
+    };
+
+    fetchBorrowedBooks();
   }, [email]);
 
   if (isPending || (email && !borrowedBooks && !error)) {
@@ -154,6 +206,7 @@ export default function MyBorrowsPage() {
                         variant="outline"
                         size="sm"
                         className="border-line bg-cream text-ink"
+                        onClick={() => handleDelete(borrow)}
                       >
                         Return Book
                       </Button>

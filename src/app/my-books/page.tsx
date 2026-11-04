@@ -31,6 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/toast";
+import Image from "next/image";
 
 type Book = {
   _id: string;
@@ -53,29 +54,43 @@ export default function MyBooksPage() {
 
   const { user } = session || { user: { name: "", email: "" } };
 
-  const loadBooks = () => {
-    if (!user.email) {
-      return;
-    }
-
-    fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/myBooks/${encodeURIComponent(user.email)}`,
-    )
-      .then((res) => res.json())
-      .then((data: Book[]) => {
-        setMyBooks(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError(true);
-        setLoading(false);
-      });
-  };
-
   // Load the books added by this user
   useEffect(() => {
-    loadBooks();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!user.email) return;
+
+    let cancelled = false;
+
+    const loadBooks = async () => {
+      try {
+        // Get the JWT token from better-auth (uses your logged-in session cookie)
+        const tokenResponse = await fetch("/api/auth/token");
+        const tokenData = await tokenResponse.json();
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/myBooks/${encodeURIComponent(user.email)}`,
+          {
+            headers: {
+              Authorization: `Bearer ${tokenData.token}`,
+            },
+          },
+        );
+        const data: Book[] = await response.json();
+        if (!cancelled) {
+          setMyBooks(data);
+          setLoading(false);
+        }
+      } catch {
+        if (!cancelled) {
+          setError(true);
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadBooks();
+    return () => {
+      cancelled = true;
+    };
   }, [user.email]);
 
   if (isPending) {
@@ -103,11 +118,23 @@ export default function MyBooksPage() {
   }
 
   // Delete a book by its id
+
+
+
+
   const handleDelete = async (book: Book) => {
     try {
+      const tokenResponse = await fetch("/api/auth/token");
+      const tokenData = await tokenResponse.json();
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/bookData/${book._id}`,
-        { method: "DELETE" },
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${tokenData.token}`,
+          },
+        },
       );
       const data = await response.json();
 
@@ -136,6 +163,28 @@ export default function MyBooksPage() {
     }
   };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // Save the edited book by its id
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -151,12 +200,16 @@ export default function MyBooksPage() {
     
 
     try {
+      const tokenResponse = await fetch("/api/auth/token");
+      const tokenData = await tokenResponse.json();
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/bookData/${editingBook._id}`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenData.token}`,
           },
           body: JSON.stringify(bookData),
         },
@@ -253,8 +306,10 @@ export default function MyBooksPage() {
                       <TableCell>
                         <div className="flex items-center gap-4">
                           {/* Book cover */}
-                          <img
+                          <Image
                             src={book.image}
+                            width={23}
+                            height={46}
                             alt={book.title}
                             className="h-16 w-11 rounded-md border border-line object-cover"
                           />

@@ -39,6 +39,11 @@ const BorrowModal = ({ book }: { book: { _id?: string; title?: string } }) => {
 
     setLoading(true);
 
+    // Get the JWT token from better-auth (uses your logged-in session cookie)
+    const tokenResponse = await fetch("/api/auth/token");
+    const tokenData = await tokenResponse.json();
+    const token = tokenData.token;
+
     const borrowData = {
       bookId: book?._id,
       bookTitle: book?.title,
@@ -55,6 +60,7 @@ const BorrowModal = ({ book }: { book: { _id?: string; title?: string } }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(borrowData),
         },
