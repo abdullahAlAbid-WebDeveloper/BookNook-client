@@ -75,11 +75,11 @@ export function HeroSlider() {
                   aria-hidden="true"
                 />
                 <div
-                  className="pointer-events-none absolute inset-0 bg-forest/70"
+                  className="pointer-events-none absolute inset-0 bg-gradient-to-r from-forest/85 via-forest/60 to-transparent"
                   aria-hidden="true"
                 />
                 <div className="relative z-10 flex flex-col gap-4">
-                <span className="w-fit rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider">
+                <span className="w-fit border-b-2 border-gold px-1 pb-1 text-xs font-semibold uppercase tracking-wider text-gold-soft">
                   {slide.eyebrow}
                 </span>
                 <h1 className="max-w-xl font-display text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">

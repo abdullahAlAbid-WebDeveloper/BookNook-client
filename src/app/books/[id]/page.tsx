@@ -145,7 +145,7 @@ const BookDetailsPage = ({ params }: { params: Promise<{ id: string }> }) => {
           </p>
 
           {/* Info box: Added by + Copies left */}
-          <div className="mt-8 flex flex-col gap-6 rounded-lg border border-line bg-cream-raised p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-8 flex flex-col gap-6 rounded-lg border border-line border-t-gold bg-cream-raised p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Added by</p>
               <p className="font-semibold text-ink">{book.userName || "Unknown"}</p>

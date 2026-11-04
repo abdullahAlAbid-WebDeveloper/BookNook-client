@@ -23,7 +23,7 @@ export function BookCard({
   image,
 }: BookCardProps) {
   return (
-    <Card className="bg-cream-raised border-line gap-0 overflow-hidden py-0 shadow-sm transition-shadow hover:shadow-md">
+    <Card className="card-lift bg-cream-raised border-line gap-0 overflow-hidden py-0 shadow-sm">
       <div className="relative aspect-[2/3] w-full bg-muted">
         {image ? (
           <Image
@@ -38,6 +38,8 @@ export function BookCard({
             {title}
           </div>
         )}
+        {/* Signature: gold bookmark ribbon on every cover */}
+        <div className="absolute left-4 top-0 h-10 w-3 rounded-b-md bg-gold" />
       </div>
 
       <CardContent className="flex-1 space-y-2 p-4">
@@ -51,8 +53,11 @@ export function BookCard({
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
-        <Link href={`/books/${_id}`}>
-          <Button variant="outline" className="w-full">
+        <Link href={`/books/${_id}`} className="w-full">
+          <Button
+            variant="outline"
+            className="w-full border-gold-soft text-forest hover:bg-cream-raised hover:text-forest"
+          >
             View Details
           </Button>
         </Link>

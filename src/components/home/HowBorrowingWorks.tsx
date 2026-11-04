@@ -24,7 +24,7 @@ export function HowBorrowingWorks() {
     >
       <div className="mx-auto w-full max-w-[1400px]">
         <div className="mb-10 text-center">
-          <p className="text-xs font-semibold uppercase tracking-wider text-forest">
+          <p className="eyebrow">
             How It Works
           </p>
           <h2

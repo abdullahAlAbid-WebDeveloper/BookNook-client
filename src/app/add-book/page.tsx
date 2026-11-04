@@ -144,6 +144,13 @@ export default function AddBookPage() {
   return (
     <main className="container mx-auto max-w-2xl px-4 py-10">
       <Card className="bg-cream border-line">
+        <div
+          className="h-[4px] w-full rounded-t-xl"
+          style={{
+            background:
+              "linear-gradient(90deg, var(--forest) 0%, var(--gold) 60%, transparent 100%)",
+          }}
+        />
         <CardHeader>
           <CardTitle className="font-display text-forest text-2xl">
             Add a New Book

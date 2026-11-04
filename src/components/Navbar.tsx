@@ -46,6 +46,14 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-cream/85 backdrop-blur-md">
+      {/* Signature gold hairline on top of the navbar */}
+      <div
+        className="h-[3px] w-full"
+        style={{
+          background:
+            "linear-gradient(90deg, var(--gold) 0%, var(--gold-soft) 45%, transparent 80%)",
+        }}
+      />
       <div className="mx-auto flex h-[72px] w-full max-w-[1400px] items-center justify-between gap-4 px-5 sm:px-8 lg:px-10">
         {/* Left: logo + links */}
         <div className="flex items-center gap-8">
@@ -85,6 +93,10 @@ export function Navbar() {
                       }`}
                     >
                       {label}
+                      {/* Signature gold underline for the active link */}
+                      {active ? (
+                        <span className="mt-1 block h-[2px] w-full rounded-full bg-gold" />
+                      ) : null}
                     </Link>
                   </li>
                 );

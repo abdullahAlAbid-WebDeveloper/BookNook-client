@@ -10,6 +10,8 @@
   --cream-raised: #fffdf9;
   --forest: #2e5b45;
   --forest-hover: #26503b;
+  --gold: #b08530;
+  --gold-soft: #d9c89a;
   --ink: #1e1a15;
   --muted: oklch(0.97 0 0);
   --line: #e7e0d4;
@@ -51,6 +53,8 @@
   --cream-raised: #1d1913;
   --forest: #356b50;
   --forest-hover: #3f7d5e;
+  --gold: #d9b45f;
+  --gold-soft: #6b5a33;
   --ink: #f3ecdf;
   --muted: oklch(0.269 0 0);
   --line: #2d2721;
@@ -91,6 +95,8 @@
   --color-cream-raised: var(--cream-raised);
   --color-forest: var(--forest);
   --color-forest-hover: var(--forest-hover);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
@@ -150,6 +156,18 @@
   body {
     background-color: var(--cream);
     color: var(--ink);
+    /* Signature: soft paper-wash gradient unique to BookNook */
+    background-image: radial-gradient(
+        900px circle at 8% -10%,
+        color-mix(in oklab, var(--gold-soft) 18%, transparent),
+        transparent 55%
+      ),
+      radial-gradient(
+        800px circle at 100% 20%,
+        color-mix(in oklab, var(--forest) 7%, transparent),
+        transparent 50%
+      );
+    background-attachment: fixed;
     font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     @apply bg-background text-foreground;
@@ -161,4 +179,45 @@
   * {
     @apply border-border outline-ring/50;
   }
+}
+
+/* ------- BookNook signature styles (design only) ------- */
+
+/* Section eyebrow: small caps label with a gold dot before it */
+.eyebrow {
+  @apply text-xs font-semibold uppercase tracking-wider text-forest;
+}
+.eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: var(--gold);
+  margin-right: 0.5rem;
+  vertical-align: 1px;
+}
+
+/* Short gold underline under big section titles */
+.gold-rule {
+  height: 3px;
+  width: 3rem;
+  border-radius: 9999px;
+  background: var(--gold);
+  margin-top: 0.75rem;
+}
+.gold-rule.centered {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Gentle lift on hover for cards */
+.card-lift {
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px -14px color-mix(in oklab, var(--ink) 35%, transparent);
 }

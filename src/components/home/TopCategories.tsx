@@ -17,7 +17,7 @@ export function TopCategories() {
     <section aria-labelledby="top-categories-heading" className="px-5 py-14 sm:px-8 lg:px-10">
       <div className="mx-auto w-full max-w-[1400px]">
         <div className="mb-10 text-center">
-          <p className="text-xs font-semibold uppercase tracking-wider text-forest">
+          <p className="eyebrow">
             Explore
           </p>
           <h2
