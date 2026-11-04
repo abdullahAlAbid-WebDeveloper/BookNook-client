@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/components/ui/toast";
+import image from '/Image/BookNook.png';
 
 const focusRing =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest/60";
@@ -55,7 +56,7 @@ export function Navbar() {
             className={`group flex shrink-0 items-center rounded-md ${focusRing}`}
           >
             <Image
-              src="/Images/booknook-logo.png"
+              src={image}
               alt="BookNook"
               width={1507}
               height={533}
