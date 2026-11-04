@@ -8,7 +8,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +16,13 @@ import { useSession } from "@/lib/auth-client";
 import { Spinner } from "../ui/spinner";
 import { toast } from "../ui/toast";
 
-const BorrowModal = ({ book }: { book: { _id?: string; title?: string } }) => {
+const BorrowModal = ({
+  book,
+  onSuccess,
+}: {
+  book: { _id?: string; title?: string; totalCopies?: string };
+  onSuccess?: () => void;
+}) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { data: session, isPending } = useSession();
@@ -32,6 +37,16 @@ const BorrowModal = ({ book }: { book: { _id?: string; title?: string } }) => {
       toast.add({
         title: "User not logged in",
         description: "Please log in to borrow a book.",
+        type: "error",
+      });
+      return;
+    }
+
+    // If no copies are left, show a toast and stop
+    if (Number(book?.totalCopies) <= 0) {
+      toast.add({
+        title: "No Copies Available",
+        description: `Sorry, "${book?.title ?? "this book"}" has no copies left right now.`,
         type: "error",
       });
       return;
@@ -75,11 +90,12 @@ const BorrowModal = ({ book }: { book: { _id?: string; title?: string } }) => {
           description: `You requested to borrow "${book?.title ?? "this book"}".`,
           type: "success",
         });
+        onSuccess?.();
         setOpen(false);
       } else {
         toast.add({
-          title: "Something went wrong",
-          description: "Could not send the borrow request. Try again.",
+          title: "Cannot Borrow",
+          description: data.error || "Could not send the borrow request. Try again.",
           type: "error",
         });
       }
@@ -105,9 +121,23 @@ const BorrowModal = ({ book }: { book: { _id?: string; title?: string } }) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button className="mt-auto w-full" />}>
+      {/* Copies 0 hole button dialog open kore na, shudhu toast dekhay */}
+      <Button
+        className="bg-forest text-cream hover:bg-forest-hover"
+        onClick={() => {
+          if (Number(book?.totalCopies) <= 0) {
+            toast.add({
+              title: "No Copies Available",
+              description: `Sorry, "${book?.title ?? "this book"}" has no copies left right now.`,
+              type: "error",
+            });
+            return;
+          }
+          setOpen(true);
+        }}
+      >
         Borrow This Book
-      </DialogTrigger>
+      </Button>
 
       <DialogContent className="border-line bg-cream-raised sm:max-w-md">
         <DialogHeader>

@@ -22,11 +22,11 @@ const focusRing =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest/60";
 
 const links = [
-  { href: "/", label: "Home" },
-  { href: "/books", label: "All Books" },
-  { href: "/add-book", label: "Add Book" },
-  { href: "/my-books", label: "My Books" },
-  { href: "/my-borrows", label: "My Borrows" },
+  { href: "/", label: "Home", authOnly: false },
+  { href: "/books", label: "All Books", authOnly: false },
+  { href: "/add-book", label: "Add Book", authOnly: true },
+  { href: "/my-books", label: "My Books", authOnly: true },
+  { href: "/my-borrows", label: "My Borrows", authOnly: true },
 ];
 
 export function Navbar() {
@@ -66,7 +66,11 @@ export function Navbar() {
 
           <nav aria-label="Main" className="hidden sm:block">
             <ul className="flex items-center gap-6 text-sm">
-              {links.map(({ href, label }) => {
+              {links.map(({ href, label, authOnly }) => {
+                // Hide these links when the user is not logged in
+                if (authOnly && !session?.user) {
+                  return null;
+                }
                 const active =
                   href === "/" ? pathname === "/" : pathname.startsWith(href);
                 return (
@@ -119,7 +123,7 @@ export function Navbar() {
                       {session.user.name || "User"}
                     </DropdownMenuLabel>
                     <DropdownMenuItem
-                      onClick={() => router.push("/my-books")}
+                      onClick={() => router.push("/my-profile")}
                       className="px-3 py-2 text-sm text-ink data-highlighted:bg-forest/10 data-highlighted:text-forest"
                     >
                       My Profile

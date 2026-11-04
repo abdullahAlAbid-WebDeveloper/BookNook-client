@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,6 +23,17 @@ import { toast } from "@/components/ui/toast";
 import { useSession } from "@/lib/auth-client";
 
 const categories = ["Fiction", "Science", "History", "Kids", "Others"];
+
+// Check if the image URL looks valid (http/https link)
+const isValidImageUrl = (url?: string) => {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
 
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
@@ -52,6 +64,26 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   const tokenData = await tokenResponse.json();
   const token = tokenData.token;
   console.log(token);
+
+  // Check if totalCopies is a valid number
+  if (Number.isNaN(Number(bookData.totalCopies)) || !bookData.totalCopies) {
+    toast.add({
+      title: "Invalid Total Copies",
+      description: "Total copies must be a number.",
+      type: "error",
+    });
+    return;
+  }
+
+  // Check if the image URL is valid
+  if (!isValidImageUrl(String(bookData.image))) {
+    toast.add({
+      title: "Invalid Image URL",
+      description: "Please paste a valid image link (starting with http or https).",
+      type: "error",
+    });
+    return;
+  }
 
   try {
     const response = await fetch(
@@ -96,6 +128,8 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 };
 
 export default function AddBookPage() {
+  const [imageUrl, setImageUrl] = useState("");
+  const [totalCopies, setTotalCopies] = useState("1");
   const { data: session, isPending } = useSession();
   if (isPending) {
     return (
@@ -156,7 +190,45 @@ export default function AddBookPage() {
 
             <div className="space-y-2">
               <Label htmlFor="totalCopies">Total Copies</Label>
-              <Input id="totalCopies" name="totalCopies" placeholder="Amount" />
+              <div className="flex items-center gap-2">
+                {/* Minus button */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-line bg-cream px-3"
+                  onClick={() => {
+                    const current = Number(totalCopies) || 0;
+                    if (current > 0) {
+                      setTotalCopies(String(current - 1));
+                    }
+                  }}
+                >
+                  −
+                </Button>
+                <Input
+                  id="totalCopies"
+                  name="totalCopies"
+                  placeholder="Amount"
+                  value={totalCopies}
+                  onChange={(e) => {
+                    // Only numbers are allowed
+                    const value = e.currentTarget.value.replace(/[^0-9]/g, "");
+                    setTotalCopies(value);
+                  }}
+                />
+                {/* Plus button */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-line bg-cream px-3"
+                  onClick={() => {
+                    const current = Number(totalCopies) || 0;
+                    setTotalCopies(String(current + 1));
+                  }}
+                >
+                  +
+                </Button>
+              </div>
             </div>
 
             {/* Book Image */}
@@ -166,6 +238,19 @@ export default function AddBookPage() {
                 id="image"
                 name="image"
                 placeholder="Paste image link (imgbb / postimage)"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.currentTarget.value)}
+                onBlur={() => {
+                  // Show toast when leaving the field with an invalid URL
+                  if (imageUrl && !isValidImageUrl(imageUrl)) {
+                    toast.add({
+                      title: "Invalid Image URL",
+                      description:
+                        "The image link must start with http or https.",
+                      type: "error",
+                    });
+                  }
+                }}
               />
             </div>
 
