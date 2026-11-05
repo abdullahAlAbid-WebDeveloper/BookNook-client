@@ -1,6 +1,6 @@
 "use client";
 
-import { authClient, signUp } from "@/lib/auth-client";
+import { authClient, signIn, signUp } from "@/lib/auth-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -85,6 +85,21 @@ const RegisterPage = () => {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      await signIn.social({
+        provider: "google",
+        callbackURL: "/", // where to go after login
+      });
+    } catch (error) {
+      toast.add({
+        title: "Google login failed",
+        description: "Could not sign in with Google. Please try again.",
+        type: "error",
+      });
+    }
+  };
+
   return (
     <main className="min-h-screen bg-cream px-4 py-14">
       <div className="mx-auto w-full max-w-md rounded-xl border border-line bg-cream-raised p-8 shadow-sm">
@@ -134,7 +149,11 @@ const RegisterPage = () => {
             />
           </div>
 
-          <Button type="submit" disabled={loading} className="w-full rounded-lg">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-lg"
+          >
             Register
           </Button>
         </form>
@@ -146,6 +165,7 @@ const RegisterPage = () => {
         </div>
 
         <Button
+          onClick={handleGoogleLogin}
           variant="outline"
           type="button"
           className="w-full rounded-lg border-line bg-white text-ink"

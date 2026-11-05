@@ -60,7 +60,14 @@ const LoginPage = () => {
         password: password,
       });
 
-      if (error) throw new Error(error.message);
+      if (error) {
+        toast.add({
+          title: "Login failed",
+          description: "Invalid email or password. Please try again.",
+          type: "error",
+        });
+        return;
+      }
 
       toast.add({
         title: "Login successful",
@@ -78,6 +85,21 @@ const LoginPage = () => {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      await signIn.social({
+        provider: "google",
+        callbackURL: "/", // where to go after login
+      });
+    } catch (error) {
+      toast.add({
+        title: "Google login failed",
+        description: "Could not sign in with Google. Please try again.",
+        type: "error",
+      });
     }
   };
 
@@ -108,15 +130,16 @@ const LoginPage = () => {
               type="password"
               className="border-line bg-white rounded-lg"
             />
-            <a
-              href="#"
-              className="text-sm text-forest hover:underline"
-            >
+            <a href="#" className="text-sm text-forest hover:underline">
               Forget Password?
             </a>
           </div>
 
-          <Button type="submit" disabled={loading} className="w-full rounded-lg">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-lg"
+          >
             {loading ? "Logging in..." : "Login"}
           </Button>
         </form>
@@ -128,6 +151,7 @@ const LoginPage = () => {
         </div>
 
         <Button
+          onClick={handleGoogleLogin}
           variant="outline"
           type="button"
           className="w-full rounded-lg border-line bg-white text-ink"
@@ -138,7 +162,10 @@ const LoginPage = () => {
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
           New here?{" "}
-          <Link href="/register" className="font-semibold text-forest hover:underline">
+          <Link
+            href="/register"
+            className="font-semibold text-forest hover:underline"
+          >
             Register
           </Link>
         </p>
