@@ -21,18 +21,25 @@ import image from "./BookNook.png";
 const focusRing =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest/60";
 
-const links = [
-  { href: "/", label: "Home", authOnly: false },
-  { href: "/books", label: "All Books", authOnly: false },
-  { href: "/add-book", label: "Add Book", authOnly: true },
-  { href: "/my-books", label: "My Books", authOnly: true },
-  { href: "/my-borrows", label: "My Borrows", authOnly: true },
+const publicLinks = [
+  { href: "/", label: "Home" },
+  { href: "/books", label: "All Books" },
+];
+
+const privateLinks = [
+  { href: "/add-book", label: "Add Book" },
+  { href: "/my-books", label: "My Books" },
+  { href: "/my-borrows", label: "My Borrows" },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
+
+  const visibleLinks = session?.user
+    ? [...publicLinks, ...privateLinks]
+    : publicLinks;
 
   const handleLogout = async () => {
     await signOut();
@@ -74,11 +81,7 @@ export function Navbar() {
 
           <nav aria-label="Main" className="hidden sm:block">
             <ul className="flex items-center gap-6 text-sm">
-              {links.map(({ href, label, authOnly }) => {
-                // Hide these links when the user is not logged in
-                if (authOnly && !session?.user) {
-                  return null;
-                }
+              {visibleLinks.map(({ href, label }) => {
                 const active =
                   href === "/" ? pathname === "/" : pathname.startsWith(href);
                 return (
