@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import BorrowModal from "@/components/books/BorrowModal";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/toast";
+import { authClient } from "@/lib/auth-client";
 
 type Book = {
   _id: string;
@@ -42,17 +43,34 @@ const BookDetailsPage = ({ params }: { params: Promise<{ id: string }> }) => {
   useEffect(() => {
     const fetchBook = async () => {
       try {
+        const { data, err: tokenError } = await authClient.token();
+        if (tokenError || !data?.token) {
+          setError(true);
+          return;
+        }
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BASE_URL}/bookData/${id}`,
+          {
+            headers: {
+              authorization: `Bearer ${data.token}`,
+            },
+          },
         );
-        const data = await response.json();
-        setBook(data);
+
+        if (!response.ok) {
+          setError(true);
+          return;
+        }
+
+        const result = await response.json();
+        setBook(result);
 
         // If the image URL is not valid, show error toast
-        if (data && !isValidImageUrl(data.image)) {
+        if (result && !isValidImageUrl(result.image)) {
           toast.add({
             title: "Invalid Image URL",
-            description: "This book has an invalid image link. Showing placeholder cover.",
+            description:
+              "This book has an invalid image link. Showing placeholder cover.",
             type: "error",
           });
         }
@@ -113,7 +131,8 @@ const BookDetailsPage = ({ params }: { params: Promise<{ id: string }> }) => {
                 setImgErrorShown(true);
                 toast.add({
                   title: "Image Failed to Load",
-                  description: "The cover image could not be loaded. Showing placeholder cover.",
+                  description:
+                    "The cover image could not be loaded. Showing placeholder cover.",
                   type: "error",
                 });
               }
@@ -148,7 +167,9 @@ const BookDetailsPage = ({ params }: { params: Promise<{ id: string }> }) => {
           <div className="mt-8 flex flex-col gap-6 rounded-lg border border-line border-t-gold bg-cream-raised p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Added by</p>
-              <p className="font-semibold text-ink">{book.userName || "Unknown"}</p>
+              <p className="font-semibold text-ink">
+                {book.userName || "Unknown"}
+              </p>
               <p className="text-sm text-muted-foreground">
                 {book.creatorEmail || ""}
               </p>
