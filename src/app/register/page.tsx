@@ -64,15 +64,22 @@ const RegisterPage = () => {
         image: photoURL || undefined,
       });
 
-      if (error) throw new Error(error.message);
+      if (error) {
+        toast.add({
+          title: "Registration  failed",
+          description: "This email is already loged in",
+          type: "error",
+        });
+        return;
+      }
 
       toast.add({
-        title: "Registration successful",
-        description: "You can now log in with your credentials.",
+        title: "Account created",
+        description: "Welcome aboard!",
         type: "success",
       });
-      form.reset();
       router.push("/");
+      router.refresh();
     } catch (error) {
       toast.add({
         title: "Registration failed",
