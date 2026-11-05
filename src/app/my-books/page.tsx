@@ -119,9 +119,6 @@ export default function MyBooksPage() {
 
   // Delete a book by its id
 
-
-
-
   const handleDelete = async (book: Book) => {
     try {
       const tokenResponse = await fetch("/api/auth/token");
@@ -163,28 +160,6 @@ export default function MyBooksPage() {
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   // Save the edited book by its id
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -196,8 +171,6 @@ export default function MyBooksPage() {
     const form = e.currentTarget;
     const formData = new FormData(form);
     const bookData = Object.fromEntries(formData.entries());
-
-    
 
     try {
       const tokenResponse = await fetch("/api/auth/token");

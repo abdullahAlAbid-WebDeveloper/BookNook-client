@@ -43,7 +43,7 @@ const BookDetailsPage = ({ params }: { params: Promise<{ id: string }> }) => {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const { data, err: tokenError } = await authClient.token();
+        const { data, error: tokenError } = await authClient.token();
         if (tokenError || !data?.token) {
           setError(true);
           return;
